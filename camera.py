@@ -2,7 +2,7 @@ from ursina import *
 
 class CameraMovement(Entity):
     def __init__(self, **kwargs):
-        self.cursor = Entity(parent=camera.ui, model='quad', color=color.pink, scale=.008, rotation_z=45)
+        self.cursor = Entity(parent=camera.ui, model='quad', color=color.white, scale=.008, rotation_z=45)
         super().__init__()
         self.speed = 15
         self.height = 2
