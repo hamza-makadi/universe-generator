@@ -1,11 +1,18 @@
 from ursina import *
 from camera import CameraMovement
-from random import randint
+from random import *
+import random
+import requests
+from io import BytesIO
+from PIL import Image
+from urllib.parse import urlencode
+import urllib.request
 
 app = Ursina()
 
-player = CameraMovement(y=50, gravity=0)
-player.speed = 500
+player = CameraMovement(x=500, gravity=0)
+player.speed = 100
+
 
 colors = [
     color.white,
@@ -25,13 +32,14 @@ colors = [
     color.gold
 ]
 
+
 class StarSystem:
     global colors
     def __init__(self,x,y,z):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.nLehmer = (((x & 0xFFFF)) | ((y & 0xFFFF) ) | (z & 0xFFFF ))
+        self.x = int(x)
+        self.y = int(y)
+        self.z = int(z)
+        self.nLehmer = (((self.x & 0xFFFF)) | ((self.y & 0xFFFF) ) | (self.z & 0xFFFF ))
 
         self.starExist = self.rndInt(0,30)==1
         if not self.starExist:return
@@ -39,8 +47,10 @@ class StarSystem:
         self.starDiameter = self.rndInt(10,40)
         self.starColor = (colors[self.rndInt(0,len(colors)-1)])
 
+        
+        planet_texture = load_texture(f"textures/planet{self.rndInt(0,49)}.gif")
         self.ent = Entity(model='sphere',
-                    color=self.starColor,
+                    texture=planet_texture,
                     scale=self.starDiameter,
                     position=(self.x,self.y,self.z)
                 )
@@ -63,15 +73,13 @@ nSector = (3000,3000,3000)
 screenSector = [0,0,0]
 starsVisible = []
 
-for screenSector[0] in range(-nSector[0],nSector[0],300):
-    for screenSector[1] in range(-nSector[1],nSector[1],300):
-        for screenSector[2] in range(-nSector[2],nSector[2],300):
+for screenSector[0] in range(-nSector[0],nSector[0],500):
+    for screenSector[1] in range(-nSector[1],nSector[1],500):
+        for screenSector[2] in range(-nSector[2],nSector[2],500):
             star = StarSystem(screenSector[0]+randint(0,300),screenSector[1]+randint(0,300),screenSector[2]+randint(0,300))
             if star.starExist:
                 starsVisible.append(star)
                 #starsVisible.append(PointLight(parent=scene, color=star.starColor, position=(star.x,star.y,star.z), radius=star.starDiameter//100))
-
-
 
 
 
@@ -81,5 +89,7 @@ Sky(texture=skybox_image, shader=None)
 def input(key):
     if key=='escape':
         quit()
+    if key=='b':
+        mouse.locked = not mouse.locked
 
 app.run()
